@@ -6,7 +6,7 @@ const port = process.env.PORT || 3000
 mongoose
 	.connect(process.env.CONN_STR, {
 		authSource: 'admin',
-		user: process.env.USER,
+		user: process.env.USERNAME,
 		pass: process.env.PASSWORD,
 	})
 	.then(_conn => {

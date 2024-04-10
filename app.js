@@ -6,7 +6,7 @@ const moviesRouter = require('./Routes/movies.route');
 let app = express();
 
 const logger = function(req, res, next){
-    console.log('Custom middleware called');
+    // console.log('Custom middleware called');
     next();
 }
 

@@ -6,7 +6,7 @@ const Movie = require('../Models/movies.model')
 mongoose
 	.connect(process.env.CONN_STR, {
 		authSource: 'admin',
-		user: process.env.USER,
+		user: process.env.USERNAME,
 		pass: process.env.PASSWORD,
 	})
 	.then(_conn => {
