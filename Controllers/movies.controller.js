@@ -1,26 +1,59 @@
 const Movie = require('../Models/movies.model')
+const ApiFeature = require('../Utils/ApiFeature')
+
+const getHighestRated = (req, res, next) => {
+	req.query.limit = '5'
+	req.query.sort = '-ratings'
+
+	next()
+}
 
 const getAllMovies = async (req, res) => {
 	try {
+		const feature = new ApiFeature(Movie.find(), req.query)
+			.filter()
+			.sort()
+			.limitFields()
+			.paginate()
 
-		let queryStr = JSON.stringify(req.query)
-		queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
-		const queryObj = JSON.parse(queryStr)
-		delete queryObj.sort
-		
-		let query = Movie.find(queryObj)
+		const movies = await feature.query
+		console.log('🚀 ~ getAllMovies ~ movies:', movies)
+
 		// console.log(query)
-		
-		const sortQuery = req.query.sort
-		
-		if (sortQuery) {
-			const sortBy = sortQuery.split(',').join(' ')
-			query = query.sort(sortBy)
-		} else {
-			query = query.sort('-createdAt')
-		}
 
-		const movies = await query
+		// SORTING LOGIC
+		// const sortQuery = req.query.sort
+		// if (sortQuery) {
+		// 	const sortBy = sortQuery.split(',').join(' ')
+		// 	query = query.sort(sortBy)
+		// } else {
+		// 	query = query.sort('-createdAt')
+		// }
+
+		// LIMITING FIELDS
+		// const selectField = req.query.fields
+		// if (selectField) {
+		// 	const select = selectField.split(',').join(' ')
+		// 	console.log(select)
+		// 	query = query.select(select)
+		// } else {
+		// 	query = query.select('-__v')
+		// }
+
+		// PAGINATION
+		// const page = req.query.page * 1 || 1
+		// const limit = req.query.limit * 1 || 10
+		// const skip = (page - 1) * limit
+		// query = query.skip(skip).limit(limit)
+
+		// if (req.query.page) {
+		// 	const moviesCounts = await Movie.countDocuments()
+		// 	if (skip >= moviesCounts) {
+		// 		throw new Error('This page is not found')
+		// 	}
+		// }
+
+		// const movies = await query
 		// console.log(movies)
 		// const movies = await Movie.find()
 		// 	.where('duration')
@@ -118,4 +151,5 @@ module.exports = {
 	createMovie,
 	updateMovie,
 	deleteMovie,
+	getHighestRated,
 }

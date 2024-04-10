@@ -5,9 +5,12 @@ const {
 	createMovie,
 	updateMovie,
 	deleteMovie,
+	getHighestRated,
 } = require('../Controllers/movies.controller')
 
 const router = express.Router()
+
+router.route('/highest-rated').get(getHighestRated, getAllMovies)
 
 router.route('/')
 	.get(getAllMovies)
