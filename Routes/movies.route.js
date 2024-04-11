@@ -6,11 +6,17 @@ const {
 	updateMovie,
 	deleteMovie,
 	getHighestRated,
+	getMovieStats,
+	getMovieByGenre,
 } = require('../Controllers/movies.controller')
 
 const router = express.Router()
 
 router.route('/highest-rated').get(getHighestRated, getAllMovies)
+
+router.route('/movie-stats').get(getMovieStats)
+
+router.route('/genres/:genre').get(getMovieByGenre)
 
 router.route('/')
 	.get(getAllMovies)
@@ -22,3 +28,4 @@ router.route('/:id')
 	.delete(deleteMovie)
 
 module.exports = router
+

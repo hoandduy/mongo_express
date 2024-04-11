@@ -16,7 +16,7 @@ class ApiFeature {
 		excludeFields.forEach(el => {
 			delete queryObj[el]
 		})
-
+		
 		this.query = this.query.find(queryObj)
 
     return this
@@ -46,7 +46,7 @@ class ApiFeature {
 		return this
 	}
 
-	async paginate() {
+	paginate() {
 		const page = this.queryStr.page * 1 || 1
 		const limit = this.queryStr.limit * 1 || 10
 		const skip = (page - 1) * limit

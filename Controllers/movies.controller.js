@@ -10,56 +10,13 @@ const getHighestRated = (req, res, next) => {
 
 const getAllMovies = async (req, res) => {
 	try {
-		const feature = new ApiFeature(Movie.find(), req.query)
+		const feature = new ApiFeature(Movie, req.query)
 			.filter()
 			.sort()
 			.limitFields()
 			.paginate()
 
 		const movies = await feature.query
-		console.log('🚀 ~ getAllMovies ~ movies:', movies)
-
-		// console.log(query)
-
-		// SORTING LOGIC
-		// const sortQuery = req.query.sort
-		// if (sortQuery) {
-		// 	const sortBy = sortQuery.split(',').join(' ')
-		// 	query = query.sort(sortBy)
-		// } else {
-		// 	query = query.sort('-createdAt')
-		// }
-
-		// LIMITING FIELDS
-		// const selectField = req.query.fields
-		// if (selectField) {
-		// 	const select = selectField.split(',').join(' ')
-		// 	console.log(select)
-		// 	query = query.select(select)
-		// } else {
-		// 	query = query.select('-__v')
-		// }
-
-		// PAGINATION
-		// const page = req.query.page * 1 || 1
-		// const limit = req.query.limit * 1 || 10
-		// const skip = (page - 1) * limit
-		// query = query.skip(skip).limit(limit)
-
-		// if (req.query.page) {
-		// 	const moviesCounts = await Movie.countDocuments()
-		// 	if (skip >= moviesCounts) {
-		// 		throw new Error('This page is not found')
-		// 	}
-		// }
-
-		// const movies = await query
-		// console.log(movies)
-		// const movies = await Movie.find()
-		// 	.where('duration')
-		// 	.equals(req.query.duration)
-		// 	.where('releaseYear')
-		// 	.equals(req.query.releaseYear)
 
 		res.status(200).json({
 			status: 'success',
@@ -145,6 +102,84 @@ const deleteMovie = async (req, res) => {
 	}
 }
 
+const getMovieStats = async (req, res) => {
+	try {
+		const stats = await Movie.aggregate([
+			{ $match: { ratings: { $gte: 4.5 } } },
+			{
+				$group: {
+					_id: '$releaseYear',
+					argRatings: { $avg: '$ratings' },
+					argPrice: { $avg: '$price' },
+					minPrice: { $min: '$price' },
+					maxPrice: { $max: '$price' },
+					priceTotal: { $sum: '$price' },
+					movieCount: { $sum: 1 },
+				},
+			},
+			{
+				$sort: {
+					minPrice: 1,
+				},
+			},
+			{
+				$match: {
+					maxPrice: {
+						$gte: 60,
+					},
+				},
+			},
+		])
+
+		res.status(200).json({
+			status: 'success',
+			total: stats.length,
+			data: {
+				stats,
+			},
+		})
+	} catch (error) {
+		res.status(404).json({
+			status: 'fail',
+			message: error.message,
+		})
+	}
+}
+
+const getMovieByGenre = async (req, res) => {
+	try {
+		const genre = req.params.genre
+		const movies = await Movie.aggregate([
+			{ $unwind: '$genres' },
+			{
+				$group: {
+					_id: '$genres',
+					movieCount: { $sum: 1 },
+					movies: { $push: '$name' },
+				},
+			},
+			{ $addFields: { genre: '$_id' } },
+			{ $project: { _id: 0 } },
+			{ $sort: { movieCount: -1 } },
+			//{$limit: 6}
+			{$match: {genre: genre}}
+		])
+
+		res.status(200).json({
+			status: 'success',
+			count: movies.length,
+			data: {
+				movies,
+			},
+		})
+	} catch (err) {
+		res.status(404).json({
+			status: 'fail',
+			message: err.message,
+		})
+	}
+}
+
 module.exports = {
 	getAllMovies,
 	getMovie,
@@ -152,4 +187,6 @@ module.exports = {
 	updateMovie,
 	deleteMovie,
 	getHighestRated,
+	getMovieStats,
+	getMovieByGenre,
 }
