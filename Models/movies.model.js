@@ -102,10 +102,10 @@ MovieSchema.pre('save', function (next) {
 })
 
 MovieSchema.post('save', function (doc, next) {
-	const content = `A new movie document with name ${doc.name} has been created by  ${doc.createdBy}\n`
-	fs.writeFileSync('./Log/log.txt', content, { flag: 'a' }, err => {
-		console.log(err.message)
-	})
+	// const content = `A new movie document with name ${doc.name} has been created by  ${doc.createdBy}\n`
+	// fs.writeFileSync('./Log/log.txt', content, { flag: 'a' }, err => {
+	// 	console.log(err.message)
+	// })
 	next()
 })
 
@@ -116,13 +116,13 @@ MovieSchema.pre(/^find/, function (next) {
 })
 
 MovieSchema.post(/^find/, function (docs, next) {
-	this.endTime = Date.now()
-	const content = `Query took ${
-		this.endTime - this.startTime
-	} milliseconds to fetch the document(s).\n`
-	fs.writeFileSync('./Log/log.txt', content, { flag: 'a' }, err => {
-		console.log(err.message)
-	})
+	// this.endTime = Date.now()
+	// const content = `Query took ${
+	// 	this.endTime - this.startTime
+	// } milliseconds to fetch the document(s).\n`
+	// fs.writeFileSync('./Log/log.txt', content, { flag: 'a' }, err => {
+	// 	console.log(err.message)
+	// })
 	next()
 })
 
