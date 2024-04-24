@@ -10,3 +10,4 @@ Query took 14 milliseconds to fetch the document(s).
 Query took 17 milliseconds to fetch the document(s).
 A new movie document with name Lorem has been created by  Duy Hoang
 Query took 23 milliseconds to fetch the document(s).
+A new movie document with name Loremabc has been created by  Duy Hoang
