@@ -12,12 +12,17 @@ mongoose
 	.then(_conn => {
 		// console.log("🚀 ~ conn:", conn)
 		console.log('DB connect successfully')
+	})
 
-		app.listen(port, () => {
-			console.log(`Ser has started on port ${port}`)
-		})
+const server = app.listen(port, () => {
+	console.log(`Ser has started on port ${port}`)
+})
+
+process.on('unhandledRejection', (err) => {
+	console.log(err.name, err.message)
+	console.log('Unhandled Rejection occurred! Shutting down...')
+
+	server.close(() => {
+		process.exit(1)
 	})
-	.catch(err => {
-		console.log(err)
-		console.log('Something went wrong')
-	})
+})
